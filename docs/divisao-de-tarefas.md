@@ -43,7 +43,7 @@ related:
 ### A-01 · Contexto geral e glossário
 - **Arquivo:** [[contexto-geral]]
 - **O que fazer:**
-  - [x] Confirmar tipos de dispositivos e sistemas (Aurora/Sentinel/FlowTrack) — ✅ D-01 e D-02
+  - [x] Confirmar tipos de dispositivos e sistemas (Aurora/Sentinel/FlowTrack) — ✅ Confirmado
   - [x] Esclarecer "Aurora" e "Sentinel" — ✅ São sistemas (Aurora=Prism, Sentinel=Nexus)
   - [ ] Confirmar papéis de acesso de CS e Engenharia (ver P-02 em lacunas) — ❓ Em aberto
 - **Status:** ✅ Feito (P-02 permanece em aberto)
@@ -83,11 +83,11 @@ related:
 - **Arquivo:** [[fluxo-03-logistica-reversa]] *(criado em 2026-06-02)*
 - **O que documentar:**
   - [x] Gatilho 1 (SalesGrid): campo a mapear após migração — L-11 aberta
-  - [x] Gatilho 2 (falha): formulário CSI dentro do sistema — substitui TaskFlow (D-14)
+  - [x] Gatilho 2 (falha): formulário CSI dentro do sistema — substitui TaskFlow
   - [x] Informações do chamado: campos do formulário CSI documentados
   - [x] NF de retorno: Fiscal emite no Omie
   - [x] Triagem: análise breve pelo Suporte antes do envio formal ao lab
-  - [x] Sem NF: sistema BLOQUEIA entrada física + alerta fiscal (D-15 — confirmar com Amanda)
+  - [x] Sem NF: sistema BLOQUEIA entrada física + alerta fiscal
   - [x] Estados separados: Retorno → Aguardando NF → Em Trânsito → Em Manutenção
   - [x] Diagrama Mermaid incluído
 - **Lacunas geradas:** L-11, L-13
@@ -99,12 +99,12 @@ related:
 ### A-05 · Fluxo 4 — Manutenção e Reparo
 - **Arquivo:** [[fluxo-04-manutencao-e-reparo]] *(criado em 2026-06-02)*
 - **O que documentar:**
-  - [x] ~~Laudo: só Manutenção cria/edita; Suporte/Operações visualizam (D-20)~~ — **laudo removido (D-36, 2026-06-10)**
-  - [x] ~~Lista de peças: dinâmica (D-17)~~ — **removida com o laudo (D-36)**
-  - [x] Contador com alerta: sim — limite de 3 (D-16, L-09). **Núcleo do fluxo: registrar se foi à manutenção e quantas vezes (D-36)**
-  - [x] ~~Dispositivo reprovado com peças: campo de reaproveitamento (D-18)~~ — **removido com o laudo (D-36)**; reprovado/sem conserto → ⚫ Descartado / Baixa
-  - [x] Baixa patrimonial Omie: 🔮 **Fase Futura (D-37)** — fora do sistema nesta fase (L-07 diferida)
-  - [x] Antes de voltar ao estoque: passa por "Em Trânsito" (D-19) + campo de testes/diagnóstico
+  - [x] ~~Laudo: só Manutenção cria/edita; Suporte/Operações visualizam~~ — **laudo removido desta versão**
+  - [x] ~~Lista de peças: dinâmica~~ — **removida com o laudo**
+  - [x] Contador com alerta: sim — limite de 3. **Núcleo do fluxo: registrar se foi à manutenção e quantas vezes**
+  - [x] ~~Dispositivo reprovado com peças: campo de reaproveitamento~~ — **removido com o laudo**; reprovado/sem conserto → ⚫ Descartado / Baixa
+  - [x] Baixa patrimonial Omie: 🔮 **Fase Futura** — fora do sistema nesta fase (L-07 diferida)
+  - [x] Antes de voltar ao estoque: passa por "Em Trânsito" + campo de testes/diagnóstico
   - [x] Diagrama Mermaid incluído
 - **Lacunas geradas (status 2026-06-03):** L-09 ✅ (limite 3) e L-14 ✅ (Correios) fechadas. Nova: L-21 (desmonte/reaproveitamento de peças).
 - **Referência no projeto:** Seção "Workflow Etapa 4" do `PROJETO - GESTÃO DE ATIVOS.md`
@@ -159,4 +159,3 @@ Semana 3
 | `PROJETO - GESTÃO DE ATIVOS.md` | Documento original do projeto (fonte da verdade) |
 | [[contexto-geral]] | Visão geral, atores, glossário, estados |
 | [[lacunas-abertas]] | Perguntas em aberto — consultar sempre |
-| [[decisoes-2026-06-02]] · [[decisoes-2026-06-02-sessao2]] · [[decisoes-2026-06-09-estoque-x-fiscal]] · [[decisoes-2026-06-10-remocao-laudos-e-omie-futuro]] | Decisões registradas |
