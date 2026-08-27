@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(New-Item -ItemType Directory -Force \"C:\\\\Users\\\\Amand\\\\OneDrive\\\\Documentos\\\\Obsidian Vault\\\\Gestão de Ativos\\\\docs\\\\fluxos\")",
+      "Bash(New-Item -ItemType Directory -Force \"C:\\\\Users\\\\Amand\\\\OneDrive\\\\Documentos\\\\Obsidian Vault\\\\Gestão de Ativos\\\\docs\\\\decisoes\")",
+      "Bash(New-Item -ItemType Directory -Force \"C:\\\\Users\\\\Amand\\\\OneDrive\\\\Documentos\\\\Obsidian Vault\\\\Gestão de Ativos\\\\docs\\\\lacunas\")",
+      "Bash(git pull *)",
+      "Bash(git checkout *)"
+    ]
+  }
+}
