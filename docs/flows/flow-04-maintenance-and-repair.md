@@ -109,7 +109,7 @@ Once approved in testing, the device **does not have a single destination**. Ope
 ## 8. Business rules
 
 - **BR-01:** The `Maintenance Counter` is automatically incremented on each maintenance entry. It is the only mandatory history information — **whether** the device went to maintenance and **how many times**.
-- **BR-02:** The `Maintenance Counter` limit is **3 maintenances per device**. Once the limit is reached, if the device **fails again**, it **does not go for normal repair** — it is sent for **disassembly and parts salvage**. If no parts are salvageable, it proceeds to ⚫ **Disposed / Written Off**.
+- **BR-02:** The `Maintenance Counter` limit is **3 maintenances per device**. Once the limit is reached, if the device **fails again**, it **does not go for normal repair** — it enters the **⚫ Disassembly / Parts Salvage** state. Salvageable parts are shipped back to Novus Tech **via Correios** and re-enter stock. If no parts are salvageable, the device proceeds directly to ⚫ **Disposed / Written Off**.
 - **BR-03:** The maintenance outcome is **Approved** or **Rejected**. Approved → destination per 6A; Rejected / no repair possible → ⚫ Disposed / Written Off.
 - **BR-04:** Prism/Nexus/Fusion (external RepairTech / third-party) goes through ⚪ **In Transit** before reaching stock.
 - **BR-05:** FlowTrack (internal Engineering) goes **directly** to 🟡 **In Stock** upon approval — no transit.
@@ -128,9 +128,11 @@ Once approved in testing, the device **does not have a single destination**. Ope
    │
    ├── [Had 3 maintenances and failed again]
    │       ↓
-   │   Disassembly / parts salvage (see L-21)
-   │       ↓
-   │   ⚫ Disposed / Written Off
+   │   ⚫ Disassembly / Parts Salvage
+   │       ├── [parts salvageable] ──► shipped via Correios ──► re-enter stock
+   │       └── [no salvageable parts]
+   │               ↓
+   │           ⚫ Disposed / Written Off
    │
    ├── STRAND A: External RepairTech / third-party (Prism / Nexus / Fusion)
    │   ├── [Approved]
@@ -186,10 +188,10 @@ Once approved in testing, the device **does not have a single destination**. Ope
 
 ## 12. Open gaps and questions
 
-| ID | Question | Owner |
+| ID | Question | Status |
 |---|---|---|
 | L-07 | Omie asset write-off on disposal — automatic or manual? | 🔮 **Deferred — Future Phase (Back-end)**. In this phase, manual write-off outside system |
-| L-21 | Is "Disassembly / parts salvage" its own visible state in the system? How are salvaged parts recorded/returned to stock? | ❓ Amanda |
+| L-21 | Is "Disassembly / parts salvage" its own visible state? How do salvaged parts return to stock? | ✅ Closed — own visible state; salvaged parts returned via Correios and re-enter stock |
 
 ---
 
@@ -201,9 +203,9 @@ Once approved in testing, the device **does not have a single destination**. Ope
 flowchart TD
     INI_A["Status: 🔴 In Maintenance\nDevice at external RepairTech"] --> CTR_A["Maintenance Counter +1"]
     CTR_A --> LIM_A{"Had 3 maintenances\nand failed again?"}
-    LIM_A -->|"Yes"| DESM_A["Send for Disassembly\nand parts salvage\n(see L-21)"]
+    LIM_A -->|"Yes"| DESM_A["Status:\n⚫ Disassembly / Parts Salvage"]
     DESM_A --> REAP_A{"Any salvageable\nparts?"}
-    REAP_A -->|"Yes"| REC_A["Salvages parts\nbefore disposal"]
+    REAP_A -->|"Yes"| REC_A["Parts shipped back\nvia Correios → re-enter stock"]
     REC_A --> DESC_A["Status:\n⚫ Disposed / Written Off"]
     REAP_A -->|"No"| DESC_A
     LIM_A -->|"No"| TRIAG_A["Technician performs triage,\ndiagnosis and repair"]
@@ -224,9 +226,9 @@ flowchart TD
 flowchart TD
     INI_B["Status: 🔴 In Maintenance\nDevice at internal Engineering"] --> CTR_B["Maintenance Counter +1"]
     CTR_B --> LIM_B{"Had 3 maintenances\nand failed again?"}
-    LIM_B -->|"Yes"| DESM_B["Send for Disassembly\nand parts salvage\n(see L-21)"]
+    LIM_B -->|"Yes"| DESM_B["Status:\n⚫ Disassembly / Parts Salvage"]
     DESM_B --> REAP_B{"Any salvageable\nparts?"}
-    REAP_B -->|"Yes"| REC_B["Salvages parts\nbefore disposal"]
+    REAP_B -->|"Yes"| REC_B["Parts shipped back\nvia Correios → re-enter stock"]
     REC_B --> DESC_B["Status:\n⚫ Disposed / Written Off"]
     REAP_B -->|"No"| DESC_B
     LIM_B -->|"No"| ABR_B["Operations opens kit\nchecks and cleans"]

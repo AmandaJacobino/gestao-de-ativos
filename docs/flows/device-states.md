@@ -15,7 +15,8 @@
 | In Transit — return                | ⚪     | NF issued — device on its way to lab / RepairTech / Engineering                                                                             |
 | In Maintenance                     | 🔴    | Device on the bench — external RepairTech (Prism/Nexus) or internal Engineering (FlowTrack)                                                 |
 | In Transit — return to stock       | ⚪     | External RepairTech only (Prism/Nexus approved) — returning to Novus Tech via Correios                                                      |
-| Disposed / Written Off             | ⚫     | Rejected in maintenance / end of useful life                                                                                                |
+| Disassembly / Parts Salvage        | ⚫    | Device reached the 3-maintenance limit and failed again — disassembled for parts; salvageable parts shipped back via Correios               |
+| Disposed / Written Off             | ⚫     | Rejected in maintenance / end of useful life; or after disassembly with no salvageable parts                                                |
 
 > **Note on "In Transit — return to stock":** This state applies only to devices that went through **external RepairTech** (Prism/Nexus/Fusion). Devices that went through **internal Engineering** (FlowTrack) go directly to 🟡 In Stock, since maintenance is performed within the company.
 
@@ -49,6 +50,7 @@ stateDiagram-v2
     state "⚪ In Transit — return to lab" as TransitReturn
     state "🔴 In Maintenance" as InMaintenance
     state "⚪ In Transit — return to stock (RepairTech)" as TransitStock
+    state "⚫ Disassembly / Parts Salvage" as Disassembly
     state "⚫ Disposed / Written Off" as Disposed
 
     [*] --> InStock : Device registered
@@ -77,7 +79,9 @@ stateDiagram-v2
     InMaintenance --> Reserved : Approved FlowTrack — destination = customer / new customer (re-enters Flow 2)
 
     InMaintenance --> Disposed : Rejected / no repair possible
-    InMaintenance --> Disposed : 3+ maintenances and new failure (disassembly — L-21)
+    InMaintenance --> Disassembly : 3+ maintenances and new failure
+    Disassembly --> TransitStock : Salvaged parts shipped back via Correios
+    Disassembly --> Disposed : No salvageable parts
     Disposed --> [*]
 ```
 
@@ -95,7 +99,7 @@ stateDiagram-v2
 | In Transit outbound | In Operation | Correios API confirms delivery **AND** type = FlowTrack |
 | In Transit outbound | Delivered | Correios API confirms delivery **AND** type = Prism / Nexus / Fusion |
 | Delivered | In Operation | Commissioned in Aurora / Sentinel — Prism/Nexus/Fusion |
-| In Operation | Field Failure | **After Operations analysis.** Detection: Aurora/Sentinel > 7 days without communication (Prism/Nexus/Fusion) or customer report via CSI (FlowTrack) |
+| In Operation | Field Failure | **After Operations analysis.** Detection: Aurora/Sentinel > 7 days without communication — limit is **fixed** (Prism/Nexus/Fusion) or customer report via CSI (FlowTrack) |
 | In Operation | Awaiting Return Invoice | SalesGrid signals contract termination |
 | Delivered | Awaiting Return Invoice | SalesGrid signals contract termination |
 | Field Failure | Awaiting Return Invoice | Automatic — system initiates reverse NF flow |
@@ -106,16 +110,8 @@ stateDiagram-v2
 | In Maintenance | Reserved | Approved **AND** destination = current / new customer → re-enters Flow 2 |
 | In Transit return to stock | In Stock | Arrival registered at Novus Tech (Correios tracking), **if destination = stock** |
 | In Transit return to stock | Reserved | Arrival registered **AND** destination = customer / new customer → re-enters Flow 2 |
-| In Maintenance | Disposed / Written Off | Technician records rejection / no repair possible; **or** after 3 maintenances + new failure → disassembly and parts salvage (L-21) |
+| In Maintenance | Disassembly / Parts Salvage | 3 maintenances reached and device fails again → disassembled; salvageable parts shipped back via Correios |
+| In Maintenance | Disposed / Written Off | Technician records rejection / no repair possible |
+| Disassembly / Parts Salvage | In Transit return to stock | Salvaged parts shipped back via Correios |
+| Disassembly / Parts Salvage | Disposed / Written Off | No salvageable parts — device fully written off |
 
----
-
-## Open gaps affecting this diagram
-
-| ID | Impact on diagram | Status |
-|---|---|---|
-| L-07 | Transition → Disposed: asset write-off in Omie | 🔮 Deferred — Future Phase. In this phase the system only marks ⚫ Disposed; manual write-off outside the system |
-| L-16 | Is "Field Failure" an official visible state or just a flag/label? | ❓ Open |
-| L-19 | After Operations analysis, is the replacement device reservation automatic or manual? | ❓ Open |
-| L-20 | Is the 7-day communication limit fixed or configurable? | ❓ Open |
-| L-21 | Is "Disassembly / parts salvage" its own state? How do salvaged parts return to stock? | ❓ Open |

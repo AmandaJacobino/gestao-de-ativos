@@ -63,7 +63,7 @@ SalesGrid signals termination via a field with value "CLOSED", "TERMINATION" or 
 Detection varies by device type. In none of the cases does the system act alone: everything goes through **Operations analysis**.
 
 **Trigger 2A — Remote failure (Prism / Nexus / Fusion):**
-Aurora/Sentinel detect that the device **has not communicated for more than 7 days**. The system automatically fires a **swap request for Operations to analyze**. Operations decides whether to initiate retrieval.
+Aurora/Sentinel detect that the device **has not communicated for more than 7 days** (fixed limit). The system automatically fires a **swap request for Operations to analyze**. Operations decides whether to initiate retrieval.
 
 **Trigger 2B — Customer-reported failure (FlowTrack):**
 With no remote monitoring, the customer contacts Support / CS reporting the issue (e.g. pole broke, phone won't charge). The agent fills in the CSI form identifying the device by **serial number** (e.g. NXT-450). Also applies to the failure of an isolated item from a FlowTrack kit.
@@ -110,13 +110,13 @@ With no remote monitoring, the customer contacts Support / CS reporting the issu
 | 2 | **Operations** | **Analyzes** the swap request | Decides whether to initiate retrieval. **Nothing automatic without this analysis.** |
 | 3 | System | Locates the device by serial number | Status → 🟠 **Field Failure** |
 | 4 | System | Initiates reverse NF flow and notifies Omie | Status → 🟠 **Awaiting Return Invoice** |
-| 5 | Operations | **(Optional)** Arranges a replacement for the customer | See gap **L-19** (automatic or manual reservation?) |
+| 5 | System | **Automatically reserves** a replacement device from stock | Status of replacement → ⚪ **Reserved** — re-enters Flow 2 |
 | 6 | Fiscal | Issues return NF in Omie | — |
 | 7 | Operations / Fiscal | **Manually registers the NF number and attaches the PDF** | Block lifted |
 | 8 | System | Updates status | ⚪ **In Transit** (returning) |
 | 9 | RepairTech / Engineering | Device arrives; entry registered (destination by model — see 6A) | Status → 🔴 **In Maintenance** |
 
-> **Device replacement:** the old rule of automatic replacement reservation was **revoked**. Replacement only occurs after Operations analysis. Whether and how the system automatically reserves the replacement after that decision is gap **L-19**.
+> **Device replacement:** once Operations confirms the swap, the system **automatically reserves** a replacement device from stock, which re-enters Flow 2.
 
 ---
 
@@ -162,9 +162,9 @@ Not every device returning from the field goes to stock/maintenance. The return 
 - **BR-02:** Status **🟠 Field Failure** is only set **after Operations analyzes and confirms the swap**. Detection (Aurora/Sentinel > 7 days or customer report via CSI) only generates a **swap request**.
 - **BR-03:** The device **cannot physically enter** the lab without a registered return NF. System blocks with a fiscal warning.
 - **BR-04:** Field failure **triggers no automatic action** — requires prior human analysis. Detection by type:
-  - **Prism / Nexus / Fusion:** remote detection via Aurora/Sentinel (no communication for more than 7 days).
+  - **Prism / Nexus / Fusion:** remote detection via Aurora/Sentinel (no communication for more than 7 days — **fixed limit**).
   - **FlowTrack:** manual detection, by customer report, via CSI form.
-  - Replacement device reservation, if any, occurs **only after Operations decision** (see L-19).
+  - Once Operations confirms the swap, the system **automatically reserves** a replacement from stock.
 - **BR-05:** The return NF is issued by Fiscal in Omie. In this phase **no native integration**, the number is **manually registered** in the system with **PDF upload**. Automatic capture via API = Future Phase (Back-end).
 - **BR-06:** All serials of a FlowTrack kit are **linked to the same contract**. Failure of a single item is handled manually and generates a swap **of the affected item only**.
 - **BR-07:** The **return destination depends on the model**: **Aurora/Sentinel (Prism/Nexus/Fusion)** → stock and maintenance at a **third-party company**; **FlowTrack** → **Novus Tech's own stock** (internal Engineering).
@@ -230,9 +230,9 @@ Not every device returning from the field goes to stock/maintenance. The return 
 |---|---|---|
 | L-11 | Exact SalesGrid field for termination — map after migration | ⏳ Blocked — awaiting migration |
 | L-13 | Does lab / RepairTech return use Correios tracking? | ❓ Amanda + dev |
-| L-16 | Is "Field Failure" an official state in the system or just a label/flag before "Awaiting Return Invoice"? | ❓ Amanda |
-| L-19 | After Operations analysis, is the replacement reservation automatic (with stock → Flow 2) or manual? | ❓ Amanda |
-| L-20 | Is the 7-day communication limit fixed or configurable (by device type / customer)? | ❓ Amanda + dev |
+| L-16 | Is "Field Failure" an official state in the system or just a label/flag before "Awaiting Return Invoice"? | ✅ Closed — official visible state |
+| L-19 | After Operations analysis, is the replacement reservation automatic (with stock → Flow 2) or manual? | ✅ Closed — automatic |
+| L-20 | Is the 7-day communication limit fixed or configurable (by device type / customer)? | ✅ Closed — fixed at 7 days |
 
 ---
 
