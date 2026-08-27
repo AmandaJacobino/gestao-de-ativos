@@ -30,15 +30,14 @@ O sistema busca máxima **rastreabilidade fiscal** (Nota Fiscal) e visibilidade 
 
 ## Direcionamento Estoque × Fiscal (2026-06-09)
 
-> Base: [[decisoes-2026-06-09-estoque-x-fiscal|documento de conhecimento Estoque × Fiscal]]. Decisões D-31 a D-35.
 
 **Problema central — desconexão de nomenclaturas:** o mesmo dispositivo é identificado de formas distintas no **Estoque** (nome operacional, ex: `NVT-45205`) e no **Fiscal** (nome técnico/contábil, ex: `Prism-v2-R3`). Unificar as bases hoje exigiria recolher todos os dispositivos em campo — inviável. Por isso o projeto **nasce isolado do ERP Omie**, focado nas Operações; qualquer automação com o Omie é **Fase Futura (Back-end)**.
 
 **Auroraptações desta fase (rédeas afrouxadas):**
-- **Reserva 100% manual**, restrita ao Estoque (Omie não suporta reserva) — D-32.
-- **NF (saída e devolução) registrada manualmente + upload do PDF** — D-31, D-33.
-- **Saída sem bloqueio rígido:** permite sair marcando `Pendente de Nota Fiscal`; com NF, `Baixa Definitiva` — D-34. **Devolução mantém o bloqueio** (D-15).
-- **Retorno roteado por modelo / destino flexível** — Aurora/Sentinel → terceira; FlowTrack → estoque próprio; pode voltar ao cliente atual ou a um novo cliente — D-35.
+- **Reserva 100% manual**, restrita ao Estoque (Omie não suporta reserva).
+- **NF (saída e devolução) registrada manualmente + upload do PDF**.
+- **Saída sem bloqueio rígido:** permite sair marcando `Pendente de Nota Fiscal`; com NF, `Baixa Definitiva`. **Devolução mantém o bloqueio**.
+- **Retorno roteado por modelo / destino flexível** — Aurora/Sentinel → terceira; FlowTrack → estoque próprio; pode voltar ao cliente atual ou a um novo cliente.
 
 **Estratégia de transição (visão de futuro):**
 - **Curto/médio prazo (comodato/locação):** dispositivos são da Novus Tech, em poder do cliente. Sistema controla quantidade, quem tem o quê, emissões de NF de manutenção e ciclo de vida.
@@ -88,7 +87,7 @@ Um contrato FlowTrack inclui o seguinte kit por unidade contratada:
 | Carregadores | 2× (um para o celular, um para o coletor) |
 | Cabos | 2× (um para o carregador do celular, um para o coletor) |
 
-> **D-23:** Todos os itens têm número de série com etiquetas próprias da empresa. O sistema rastreia cada item individualmente como um ativo separado.
+> Todos os itens têm número de série com etiquetas próprias da empresa. O sistema rastreia cada item individualmente como um ativo separado.
 
 ---
 
@@ -136,8 +135,8 @@ Um contrato FlowTrack inclui o seguinte kit por unidade contratada:
 
 | Sistema | Finalidade | Status |
 |---|---|---|
-| **SalesGrid** | Leitura de contratos fechados → gera a **solicitação** de reserva (a reserva dos dispositivos é **manual** — D-32) | Planejado |
-| **Omie** | Criar pedido de venda; puxar NF emitida (saída e devolução) | 🔮 **Fase Futura (Back-end)** (D-31). Nesta fase **sem integração nativa**: NF (saída e devolução) registrada **manualmente** + PDF. Quando implementada: T-01/D-07; T-04. |
+| **SalesGrid** | Leitura de contratos fechados → gera a **solicitação** de reserva (a reserva dos dispositivos é **manual**) | Planejado |
+| **Omie** | Criar pedido de venda; puxar NF emitida (saída e devolução) | 🔮 **Fase Futura (Back-end)**. Nesta fase **sem integração nativa**: NF (saída e devolução) registrada **manualmente** + PDF. |
 | **Correios** | Rastreamento de envio para cliente (polling) | Máx. duas vezes ao dia, em horários estratégicos (T-02 definida) |
 | **Aurora** | Comissionamento, sub-status de comunicação e detecção de falha (>7 dias sem comunicar) — **Prism** | Nova integração — a especificar |
 | **Sentinel** | Idem Aurora — **Nexus** e **Fusion** | Nova integração — a especificar |

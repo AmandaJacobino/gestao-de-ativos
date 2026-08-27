@@ -10,7 +10,6 @@ related:
   - "[[contexto-geral]]"
   - "[[fluxo-02-provisionamento-e-saida]]"
   - "[[fluxo-04-manutencao-e-reparo]]"
-  - "[[decisoes-2026-06-09-estoque-x-fiscal]]"
 ---
 
 # Fluxo 3: Logística Reversa (Retorno)
@@ -18,11 +17,6 @@ related:
 > Responsável: Amanda
 > Status: ✅ Atualizado — revisado em 2026-06-09 (base de conhecimento Estoque × Fiscal)
 > Atualizado em: 2026-06-09
-
-> **⚠️ Revisão 2026-06-09 — Estoque × Fiscal (D-31, D-35):**
-> - A **NF de devolução** continua sendo emitida pelo Fiscal no Omie, mas, nesta fase **sem integração nativa**, o número é **registrado manualmente** no sistema com **upload do PDF** (D-31). Captura automática via API = Fase Futura (Back-end).
-> - O **bloqueio fiscal de entrada** sem NF de devolução **permanece** (D-15) — diferente da saída, que foi afrouxada. A NF de devolução é o "GPS fiscal" do retorno.
-> - **Roteamento por modelo no retorno (D-35):** a NF de retorno pode determinar destinos distintos por modelo de equipamento — **Aurora/Sentinel (Prism/Nexus/Fusion)** vão para o **estoque e manutenção de uma empresa terceira**; **FlowTrack** vai para o **estoque próprio da Novus Tech**. Além disso, **nem todo dispositivo volta ao estoque**: ele pode retornar direto ao **cliente atual** ou ser **remanejado para um novo cliente** (ver seção 6A).
 
 ---
 
@@ -122,11 +116,11 @@ Como não há monitoramento remoto, o cliente entra em contato com o Suporte / C
 | 8 | Sistema | Atualiza status | ⚪ **Em Trânsito** (retornando) |
 | 9 | RepairTech / Engenharia | Dispositivo chega; entrada registrada (destino por modelo — ver 6A) | Status → 🔴 **Em Manutenção** |
 
-> **Substituição do dispositivo:** a antiga regra de reserva automática de substituto foi **revogada** (ver D-27 revisado). A substituição só ocorre após a análise de Operações. Se e como o sistema reserva o substituto automaticamente após essa decisão é a lacuna **L-19**.
+> **Substituição do dispositivo:** a antiga regra de reserva automática de substituto foi **revogada**. A substituição só ocorre após a análise de Operações. Se e como o sistema reserva o substituto automaticamente após essa decisão é a lacuna **L-19**.
 
 ---
 
-## 6A. Roteamento do retorno por modelo e destino (D-35)
+## 6A. Roteamento do retorno por modelo e destino
 
 Quando a NF de devolução é emitida, o **destino do dispositivo não é único**: depende do **modelo** e da **decisão registrada na NF de retorno / por Operações**. Este é um ponto amplo da logística reversa.
 
@@ -171,10 +165,10 @@ Nem todo dispositivo que volta de campo segue para o estoque/manutenção. A NF 
   - **Prism / Nexus / Fusion:** detecção remota via Aurora/Sentinel (sem comunicação por mais de 7 dias).
   - **FlowTrack:** detecção manual, por relato do cliente, via formulário CSI.
   - A reserva de um substituto, se houver, ocorre **somente após decisão de Operações** (ver L-19).
-- **RN-05 (revisada — D-31):** A NF de devolução é emitida pelo Fiscal no Omie. Nesta fase **sem integração nativa**, o número é **registrado manualmente** no sistema com **upload do PDF**. Captura automática via API = Fase Futura (Back-end).
+- **RN-05:** A NF de devolução é emitida pelo Fiscal no Omie. Nesta fase **sem integração nativa**, o número é **registrado manualmente** no sistema com **upload do PDF**. Captura automática via API = Fase Futura (Back-end).
 - **RN-06:** Todos os seriais de um kit FlowTrack ficam **vinculados ao mesmo contrato**. A falha de um único item é tratada manualmente e gera troca **apenas do item afetado**.
-- **RN-07 (nova — D-35):** O **destino do retorno depende do modelo**: **Aurora/Sentinel (Prism/Nexus/Fusion)** → estoque e manutenção de **empresa terceira**; **FlowTrack** → **estoque próprio** da Novus Tech (Engenharia interna).
-- **RN-08 (nova — D-35):** O retorno **nem sempre passa pelo estoque/manutenção**. Conforme a NF de retorno / decisão de Operações, o dispositivo pode voltar **direto ao cliente atual** ou ser **remanejado a um novo cliente** (re-entrando no Fluxo 2). Operações registra o destino ao dar entrada do retorno.
+- **RN-07:** O **destino do retorno depende do modelo**: **Aurora/Sentinel (Prism/Nexus/Fusion)** → estoque e manutenção de **empresa terceira**; **FlowTrack** → **estoque próprio** da Novus Tech (Engenharia interna).
+- **RN-08:** O retorno **nem sempre passa pelo estoque/manutenção**. Conforme a NF de retorno / decisão de Operações, o dispositivo pode voltar **direto ao cliente atual** ou ser **remanejado a um novo cliente** (re-entrando no Fluxo 2). Operações registra o destino ao dar entrada do retorno.
 
 ---
 
@@ -225,7 +219,7 @@ Nem todo dispositivo que volta de campo segue para o estoque/manutenção. A NF 
 | Sistema | Finalidade | Status |
 |---|---|---|
 | **SalesGrid** | Detectar encerramento de contrato | Aguarda migração (L-11) |
-| **Omie** | Emissão da NF de devolução | 🔮 **Fase Futura (Back-end)** para registro automático. Nesta fase, número + PDF **manuais** (D-31). |
+| **Omie** | Emissão da NF de devolução | 🔮 **Fase Futura (Back-end)** para registro automático. Nesta fase, número + PDF **manuais**. |
 | **Correios** | Rastreamento do retorno (Prism/Nexus/Fusion via RepairTech/terceira) | Polling — mesma lógica do Fluxo 2 |
 
 ---
@@ -237,8 +231,7 @@ Nem todo dispositivo que volta de campo segue para o estoque/manutenção. A NF 
 | L-11 | Campo exato no SalesGrid para encerramento — mapear após migração | ⏳ Bloqueado — aguarda migração |
 | L-13 | O retorno ao laboratório / RepairTech usa rastreamento dos Correios? | ❓ Amanda + dev |
 | L-16 | "Falha em Campo" é um estado oficial no sistema ou apenas um rótulo/flag antes de "Aguardando NF"? | ❓ Amanda |
-| ~~L-15~~ | ~~Como funciona a reserva automática do substituto?~~ | ✅ **Revogada** — substituição só após análise de Operações (D-27 revisado) |
-| ~~L-17~~ | ~~Falha de um único item do kit FlowTrack~~ | ✅ Fechado — manual; todos os seriais vinculados ao mesmo contrato (D-23) |
+
 | L-19 | Após a análise de Operações, a reserva do substituto é automática (com estoque → Fluxo 2) ou manual? | ❓ Amanda |
 | L-20 | O limite de 7 dias sem comunicação é fixo ou configurável (por tipo de dispositivo / cliente)? | ❓ Amanda + dev |
 

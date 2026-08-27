@@ -9,7 +9,6 @@ status: fechado
 related:
   - "[[contexto-geral]]"
   - "[[fluxo-03-logistica-reversa]]"
-  - "[[decisoes-2026-06-10-remocao-laudos-e-omie-futuro]]"
 ---
 
 # Fluxo 4: Manutenção e Reparo
@@ -17,10 +16,6 @@ related:
 > Responsável: Amanda
 > Status: ✅ Atualizado — revisado em 2026-06-10 (remoção de laudos; Omie como Fase Futura)
 > Atualizado em: 2026-06-10
-
-> **⚠️ Revisão 2026-06-10 (D-36, D-37):** Os **laudos de manutenção foram removidos**. Para o objetivo atual, basta saber **se o dispositivo foi à manutenção** e **quantas vezes** (contador). Não há mais documento de laudo, peças trocadas, motivo detalhado de reprovação nem campo de peças reaproveitadas. Mantêm-se: contador + limite de 3, e o desfecho **Aprovado / Reprovado** (que decide destino vs. descarte). A **baixa patrimonial no Omie** passa a 🔮 **Fase Futura** — nesta fase o sistema apenas marca ⚫ Descartado / Baixa; a baixa patrimonial é tratada fora do sistema.
-
-> **⚠️ Revisão 2026-06-09 — Estoque × Fiscal (D-35):** A aprovação na manutenção **nem sempre devolve o dispositivo ao estoque original**. Conforme decisão de Operações / NF, o dispositivo aprovado pode: voltar ao **estoque** (próprio da Novus Tech para FlowTrack; via empresa **terceira** para Aurora/Sentinel), seguir **direto ao cliente atual**, ou ser **remanejado para um novo cliente** (re-entrando no Fluxo 2). Ver a **seção 6A — Destino após a manutenção**.
 
 ---
 
@@ -85,7 +80,7 @@ Dispositivo com status 🔴 **Em Manutenção** registrado no sistema (entrou pe
 
 ---
 
-## 6A. Destino após a manutenção (aprovado — D-35)
+## 6A. Destino após a manutenção
 
 Aprovado nos testes, o dispositivo **não tem destino único**. Operações define o destino ao liberar/receber o equipamento. A decisão considera o modelo e a demanda comercial:
 
@@ -118,10 +113,10 @@ Aprovado nos testes, o dispositivo **não tem destino único**. Operações defi
 - **RN-03:** O desfecho da manutenção é **Aprovado** ou **Reprovado**. Aprovado → destino conforme 6A; Reprovado / sem conserto → ⚫ Descartado / Baixa.
 - **RN-04:** Prism/Nexus/Fusion (RepairTech externa / empresa terceira) passa por ⚪ **Em Trânsito** antes de chegar ao estoque.
 - **RN-05:** FlowTrack (Engenharia interna) vai **diretamente** para 🟡 **Em Estoque** ao ser aprovado — sem trânsito.
-- **RN-06 (D-35):** O dispositivo aprovado **nem sempre retorna ao estoque**. Operações define o destino: **estoque** (próprio/terceira conforme modelo), **cliente atual** ou **novo cliente**. Destinos a cliente re-entram no **Fluxo 2** e seguem suas regras fiscais (NF + PDF / `Pendente de Nota Fiscal`).
-- **RN-07 (D-37):** Ao descartar, o sistema apenas marca ⚫ **Descartado / Baixa**. A **baixa patrimonial no Omie** é **Fase Futura** — tratada manualmente fora do sistema nesta fase.
+- **RN-06:** O dispositivo aprovado **nem sempre retorna ao estoque**. Operações define o destino: **estoque** (próprio/terceira conforme modelo), **cliente atual** ou **novo cliente**. Destinos a cliente re-entram no **Fluxo 2** e seguem suas regras fiscais (NF + PDF / `Pendente de Nota Fiscal`).
+- **RN-07:** Ao descartar, o sistema apenas marca ⚫ **Descartado / Baixa**. A **baixa patrimonial no Omie** é **Fase Futura** — tratada manualmente fora do sistema nesta fase.
 
-> **Removido em 2026-06-10 (D-36):** as regras de laudo (perfil que cria/visualiza laudo), a lista dinâmica de peças trocadas e o conteúdo obrigatório do laudo de reprovação **não existem mais**.
+> As regras de laudo (perfil que cria/visualiza laudo), a lista dinâmica de peças trocadas e o conteúdo obrigatório do laudo de reprovação **não existem nesta versão**.
 
 ---
 
@@ -176,7 +171,7 @@ Aprovado nos testes, o dispositivo **não tem destino único**. Operações defi
 | `Data de Liberação` | Sistema (automático) | Ao técnico confirmar aprovação |
 | `Diagnóstico / Testes realizados` | Técnico | **Opcional** — apoio operacional da manutenção; **não** é laudo nem obrigatório |
 
-> **Removidos em 2026-06-10 (D-36):** `Peças Trocadas`, `Motivo da Reprovação`, `Peças Reaproveitadas`, `O que vai para descarte`.
+> **Removidos nesta versão:** `Peças Trocadas`, `Motivo da Reprovação`, `Peças Reaproveitadas`, `O que vai para descarte`.
 
 ---
 
@@ -193,10 +188,8 @@ Aprovado nos testes, o dispositivo **não tem destino único**. Operações defi
 
 | ID | Pergunta | Responsável |
 |---|---|---|
-| L-07 | ~~Baixa patrimonial no Omie ao descartar — automático ou manual?~~ | 🔮 **Diferida — Fase Futura (Back-end)** (D-37). Nesta fase, baixa manual fora do sistema |
-| ~~L-09~~ | ~~Qual o limite do contador de manutenções?~~ | ✅ Fechado — **3 manutenções**; depois, desmonte/reaproveitamento (ver D-16) |
-| ~~L-14~~ | ~~O "Em Trânsito" da RepairTech usa Correios ou é manual?~~ | ✅ Fechado — usa rastreamento dos **Correios** (D-19) |
-| ~~L-17~~ | ~~Falha de um único item do kit FlowTrack~~ | ✅ Fechado — manual; somente o item afetado (D-23) |
+| L-07 | Baixa patrimonial no Omie ao descartar — automático ou manual? | 🔮 **Diferida — Fase Futura (Back-end)**. Nesta fase, baixa manual fora do sistema |
+
 | L-21 | "Desmonte / reaproveitamento de peças" é um estado próprio e visível no sistema? Como as peças reaproveitadas são registradas/retornam ao estoque? | ❓ Amanda |
 
 ---

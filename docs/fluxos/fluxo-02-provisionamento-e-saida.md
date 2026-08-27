@@ -9,7 +9,6 @@ related:
   - "[[contexto-geral]]"
   - "[[fluxo-01-recebimento-e-cadastro]]"
   - "[[fluxo-03-logistica-reversa]]"
-  - "[[decisoes-2026-06-09-estoque-x-fiscal]]"
 ---
 
 # Fluxo 2: Provisionamento e Saída para Campo
@@ -17,11 +16,6 @@ related:
 > Responsável: Amanda
 > Status: ✅ Fechado — revisado em 2026-06-09 (base de conhecimento Estoque × Fiscal)
 > Atualizado em: 2026-06-09
-
-> **⚠️ Revisão 2026-06-09 — Estoque × Fiscal (D-31 a D-34):** Este fluxo foi ajustado para o cenário de **independência inicial do Omie**. O sistema nasce **sem integração nativa com o ERP**, focado na eficiência das **Operações** (fluxo operacional isolado). Em consequência:
-> - A **reserva de dispositivos é 100% manual**, restrita ao ambiente de Estoque, e **não é refletida no Omie** (D-32).
-> - O **número da NF de Saída é inserido manualmente** e acompanha o **upload do PDF da NF** — a captura automática via API Omie passa a ser **Fase Futura (Back-end)** (D-31, D-33).
-> - O **bloqueio fiscal rígido da saída foi afrouxado**: a saída física é permitida mesmo sem NF, marcando o lote como **`Pendente de Nota Fiscal`**; com a NF inserida, o status fiscal vira **`Baixa Definitiva`** (D-34, ver seção 5A). O objetivo é o **saneamento gradual** do estoque físico (meta > 90% de confiabilidade) antes de qualquer integração sistêmica futura.
 
 ---
 
@@ -78,7 +72,7 @@ Contrato fechado no SalesGrid contendo campo de tipo e quantidade de dispositivo
 | 6 | Sistema | Atualiza status dos dispositivos reservados | ⚪ **Reservado** |
 | 7 | Fiscal | Emite a NF de saída no Omie (ação externa — sem disparo automático do sistema nesta fase) | — |
 
-> **🔒 Reserva 100% manual (D-32):** A reserva de dispositivos é um processo **manual, restrito ao ambiente de Estoque**. O sistema **não gera reserva automática** e **não reflete a reserva no Omie** — o ERP não suporta esse conceito de reserva, agravado pela divergência de nomenclatura (Estoque usa o nome operacional, ex: `NVT-45205`; Fiscal usa o nome técnico/contábil, ex: `Prism-v2-R3`). O SalesGrid apenas cria a **solicitação**; quem reserva os dispositivos é sempre Operações.
+> **🔒 Reserva 100% manual:** A reserva de dispositivos é um processo **manual, restrito ao ambiente de Estoque**. O sistema **não gera reserva automática** e **não reflete a reserva no Omie** — o ERP não suporta esse conceito de reserva, agravado pela divergência de nomenclatura (Estoque usa o nome operacional, ex: `NVT-45205`; Fiscal usa o nome técnico/contábil, ex: `Prism-v2-R3`). O SalesGrid apenas cria a **solicitação**; quem reserva os dispositivos é sempre Operações.
 
 > **Caso de aprovação parcial:** se o estoque for menor que a quantidade solicitada, Operações reserva o que há disponível, preenche o campo **OBS** com o que faltou e quando será enviado (ex: *"Solicitaram 100. Enviamos 80. Os 20 restantes serão enviados em xx/xx/xxxx"*), e o sistema registra a solicitação como parcialmente atendida.
 
@@ -96,7 +90,7 @@ Contrato fechado no SalesGrid contendo campo de tipo e quantidade de dispositivo
 | 6 | Operações | Registra o envio no sistema (com código de rastreio) | — |
 | 7 | Sistema | Atualiza status | ⚪ **Em Trânsito** |
 
-> **🟡 Saída sem NF (regra afrouxada — D-34):** Ao solicitar a Baixa no Estoque Físico, **se o número da NF NÃO for informado**, o sistema **permite a saída física** mesmo assim, mas marca o lote com o status fiscal **`Pendente de Nota Fiscal`**. O dispositivo segue para 🔵 **Em Separação** → ⚪ **Em Trânsito** carregando essa pendência, que **deve ser regularizada** quando a NF for emitida (número + PDF) — momento em que o status fiscal passa a **`Baixa Definitiva`**. Detalhe completo da regra na **seção 5A**.
+> **🟡 Saída sem NF:** Ao solicitar a Baixa no Estoque Físico, **se o número da NF NÃO for informado**, o sistema **permite a saída física** mesmo assim, mas marca o lote com o status fiscal **`Pendente de Nota Fiscal`**. O dispositivo segue para 🔵 **Em Separação** → ⚪ **Em Trânsito** carregando essa pendência, que **deve ser regularizada** quando a NF for emitida (número + PDF) — momento em que o status fiscal passa a **`Baixa Definitiva`**. Detalhe completo da regra na **seção 5A**.
 
 > **Por que afrouxar o bloqueio:** Substituímos o bloqueio rígido anterior (que impedia qualquer saída sem NF) por este modelo de pendência fiscal porque, nesta fase, o foco é a **eficiência operacional** e o **saneamento gradual** do estoque físico (meta > 90% de confiabilidade). Travar a expedição engessaria a operação; marcar a pendência mantém o rastro auditável sem parar o negócio.
 
@@ -155,11 +149,11 @@ O comportamento da baixa de estoque físico, ponto a ponto:
 
 ## 7. Regras de negócio
 
-- **RN-01 (revisada — D-34):** A saída física **não é mais bloqueada** pela ausência da NF. Ao dar baixa no estoque, o sistema **solicita** o `Número da NF de Saída` + PDF; se não informado, **permite a saída** e marca o lote como `Pendente de Nota Fiscal`; se informado, define `Baixa Definitiva`. *(Substitui o antigo bloqueio rígido.)*
-- **RN-02 (revisada — D-34):** Não há prazo máximo para emissão/regularização da NF. Um lote pode permanecer `Pendente de Nota Fiscal` indefinidamente, mas deve ficar **destacado** para Operações/Fiscal até virar `Baixa Definitiva`.
-- **RN-10 (nova — D-32):** A **reserva de dispositivos é 100% manual**, restrita ao ambiente de Estoque. O sistema não gera reserva automática nem a reflete no Omie. O SalesGrid cria apenas a **solicitação**.
-- **RN-11 (nova — D-33):** A baixa de estoque exige o `Número da NF de Saída` **e** o **upload do PDF da NF** para ser concluída como `Baixa Definitiva`.
-- **RN-12 (nova — D-31):** Nesta fase **não há integração nativa com o Omie**. O número da NF é registrado manualmente. A captura automática via API é Fase Futura (Back-end).
+- **RN-01:** A saída física **não é mais bloqueada** pela ausência da NF. Ao dar baixa no estoque, o sistema **solicita** o `Número da NF de Saída` + PDF; se não informado, **permite a saída** e marca o lote como `Pendente de Nota Fiscal`; se informado, define `Baixa Definitiva`. *(Substitui o antigo bloqueio rígido.)*
+- **RN-02:** Não há prazo máximo para emissão/regularização da NF. Um lote pode permanecer `Pendente de Nota Fiscal` indefinidamente, mas deve ficar **destacado** para Operações/Fiscal até virar `Baixa Definitiva`.
+- **RN-10:** A **reserva de dispositivos é 100% manual**, restrita ao ambiente de Estoque. O sistema não gera reserva automática nem a reflete no Omie. O SalesGrid cria apenas a **solicitação**.
+- **RN-11:** A baixa de estoque exige o `Número da NF de Saída` **e** o **upload do PDF da NF** para ser concluída como `Baixa Definitiva`.
+- **RN-12:** Nesta fase **não há integração nativa com o Omie**. O número da NF é registrado manualmente. A captura automática via API é Fase Futura (Back-end).
 - **RN-03:** Para dispositivos **FlowTrack**, o status muda para 🟢 **Em Operação** automaticamente ao ser confirmada a entrega (não requer instalação).
 - **RN-04:** Para dispositivos **Prism, Nexus e Fusion**, o status fica ⚪ **Entregue** após a entrega. O avanço para 🟢 **Em Operação** ocorre quando o sistema Aurora/Sentinel registrar o comissionamento do dispositivo (requer integração — ver seção 10).
 - **RN-07:** Todo dispositivo que entra em 🟢 **Em Operação** recebe automaticamente um sub-status de comunicação: **Comunicando** ou **Falha na Comunicação**, com base na leitura do sistema Aurora/Sentinel.
@@ -238,7 +232,7 @@ Baixa de Estoque
 | Sistema | Finalidade | Observação |
 |---|---|---|
 | **SalesGrid** | Leitura do contrato fechado (tipo + qtd de dispositivos) → cria a **solicitação** | Campo já existe no SalesGrid — apenas mapear. A reserva em si é manual (RN-10). |
-| **Omie** | 🔮 **Fase Futura (Back-end)** — criar pedido de venda e puxar o número da NF de saída após a emissão | Nesta fase **não há integração nativa**: o número da NF é registrado **manualmente** e o PDF anexado (D-31). Quando implementada: APIs NF-e Consultas, Utilitários de NF-e, Pedidos de Venda, Faturamento de Pedido (T-01/D-07; T-04 reaberta para a fase futura). |
+| **Omie** | 🔮 **Fase Futura (Back-end)** — criar pedido de venda e puxar o número da NF de saída após a emissão | Nesta fase **não há integração nativa**: o número da NF é registrado **manualmente** e o PDF anexado. Quando implementada: APIs NF-e Consultas, Utilitários de NF-e, Pedidos de Venda, Faturamento de Pedido. |
 | **Correios (API SRO/SIGEP)** | Rastreamento do envio | Via **polling** (não há webhooks). Intervalo: **no máximo duas vezes ao dia**, em horários estratégicos (T-02 definida). |
 | **Aurora** | Detectar comissionamento e status de comunicação de dispositivos **Prism** | Integração nova — a ser especificada pelo dev. Necessária para transição Entregue → Em Operação e para sub-status Comunicando / Falha na Comunicação. |
 | **Sentinel** | Detectar comissionamento e status de comunicação de dispositivos **Nexus** e **Fusion** | Integração nova — mesma lógica da Aurora. |
@@ -251,12 +245,7 @@ Baixa de Estoque
 
 | ID       | Pergunta                                                                                                            | Status                                                                                                            |
 | -------- | ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| ~~T-01~~ | ~~Integração com Omie para puxar o número da NF é viável?~~                                                         | ✅ Fechado — viável. APIs: NF-e Consultas, Utilitários de NF-e, Pedidos de Venda, Faturamento de Pedido (ver D-07) |
-| ~~T-02~~ | ~~Qual o intervalo de polling na API dos Correios?~~                                                                | ✅ Fechado — no máximo duas vezes ao dia, em horários estratégicos                                                 |
-| ~~L-04~~ | ~~Complemento de solicitação parcial é automático ou manual?~~                                                      | ✅ Fechado — manual, com seleção em massa (ver D-29)                                                               |
-| ~~L-08~~ | ~~Como o sistema sabe que foi instalado e está comunicando?~~                                                       | ✅ Fechado — integração com Aurora/Sentinel (ver D-28)                                                                  |
-| ~~P-03~~ | ~~Por qual canal o cliente recebe notificações de rastreamento?~~                                                   | ✅ Fechado — sistema, ou e-mail/WhatsApp se sem acesso (ver D-30)                                                  |
-| T-04     | Omie: o sistema dispara o faturamento automaticamente ou apenas cria o pedido e consulta a NF após o Fiscal emitir? | 🔮 **Diferida — Fase Futura (Back-end)** (D-31). Nesta fase a NF é manual.                                        |
+| T-04     | Omie: o sistema dispara o faturamento automaticamente ou apenas cria o pedido e consulta a NF após o Fiscal emitir? | 🔮 **Diferida — Fase Futura (Back-end)**. Nesta fase a NF é manual.                                        |
 | T-05     | Quais serviços de e-mail e WhatsApp serão usados para as notificações ao cliente?                                   | ⏳ Dev                                                                                                             |
 
 ---
